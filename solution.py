@@ -18,7 +18,8 @@ def read_data(path):
 def hebbs_rule(patterns, N, p):
     wij = 1/N
     W = np.zeros((N,N))
-    signs = [data['sign'] for data in patterns]
+#     signs = [data['sign'] for data in patterns]
+    signs = patterns
     for i in range(N):
         for j in range(N):
             if i != j:
@@ -28,14 +29,15 @@ def hebbs_rule(patterns, N, p):
                 W[i, j] = wij * prodsum
     print(W[0:3])
     print(np.vdot(signs[0],signs[1]))
-    for pi in range(p):
-        print(np.sum(np.inner(W,signs[pi])))
-    print(np.vdot(signs[0],signs[0]))
+#     for pi in range(p):
+#         print(np.sum(np.inner(W,signs[pi])))
+#     print(np.vdot(signs[0],signs[0]))
 
 def random_patterns(data, N, p):
     patterns = []
     for i in range(p):
-        patterns.append(np.random.permutation(data)[:N])
+        #patterns.append(np.random.permutation(data)[:N])
+        patterns.append(np.random.choice([-1,1],N))
     return patterns
 
 if __name__ == '__main__':
