@@ -37,16 +37,15 @@ def hebbs_rule(patterns, N, p):
     wij = 1/N
     W = np.zeros((N,N))
 #     signs = [data['sign'] for data in patterns]
-    signs = patterns
     for i in range(N):
         for j in range(N):
             if i != j:
                 prodsum = 0
-                for pi in range(p):
-                    prodsum += signs[pi][i] * signs[pi][j]
+                for p_i in range(p):
+                    prodsum +=patterns[p_i][i] *patterns[p_i][j]
                 W[i, j] = wij * prodsum
     print(W[0:3])
-    print(np.vdot(signs[0],signs[1]))
+#     print(np.vdot(signs[0],signs[1]))
 #     for pi in range(p):
 #         print(np.sum(np.inner(W,signs[pi])))
 #     print(np.vdot(signs[0],signs[0]))
