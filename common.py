@@ -24,13 +24,15 @@ def hebbs_rule(patterns):
             if i != j:
                 for p_i in range(p):
                     W[i, j] += patterns[p_i][i] *patterns[p_i][j]
-    return wij * W[j, j]
+    return wij * W
 
 def random_patterns(N, p):
     patterns = []
     for i in range(p):
         #patterns.append(np.random.permutation(data)[:N])
         patterns.append(np.random.choice([-1,1],N))
+    [np.random.choice([-1,1],N) for _ in range(p)]
+    np.random.choice([-1,1],N*p).reshape(p,N)
     return patterns
 
 def digits():

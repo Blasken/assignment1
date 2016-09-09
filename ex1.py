@@ -21,49 +21,30 @@ a precise estimate of PError. Plot your simulation results together with the
 correspondingtheoretical curve as a function of p/N. Discuss
 """
 
-def read_data(path):
-    f = open(path)
-    data = []
+def run():
+    Ns = [100, 200]
+    P = [10, 20, 30, 40, 50, 75, 100, 150, 200]
 
-    for line in f:
-        x, y, state = line.split()
-        data.append(((float(x), float(y)), int(state)))
+    for N in Ns:
+        for p in P:
+            patterns = common.random_patterns(N, p)
+            W = common.hebbs_rule(patterns)
+# fix algebra....
+            print(step(W,patterns))
 
-    npdata = np.array(data,dtype=[('point', [('x', np.float),('y', np.float)]),
-                                  ('sign', np.int)])
-    return npdata
+def step(W, S):
+# fix algebra....
+    return np.sign(np.dot(W,S))
 
-def hebbs_rule(patterns, N, p):
-    p = len(patterns)
-    N = len(patterns[0])
-    wij = 1/N
-    W = np.zeros((N,N))
-#     signs = [data['sign'] for data in patterns]
-    for i in range(N):
-        for j in range(N):
-            if i != j:
-                for p_i in range(p):
-                    W[i, j] +=patterns[p_i][i] *patterns[p_i][j]
-    W[i, j] = wij * W[j, j]
-    print(W[0:3])
-#     print(np.vdot(signs[0],signs[1]))
-#     for pi in range(p):
-#         print(np.sum(np.inner(W,signs[pi])))
-#     print(np.vdot(signs[0],signs[0]))
-
-def random_patterns(data, N, p):
-    patterns = []
-    for i in range(p):
-        #patterns.append(np.random.permutation(data)[:N])
-        patterns.append(np.random.choice([-1,1],N))
-    return patterns
+def p_error(S, S_next):
+    pass
 
 if __name__ == '__main__':
-    import sys
-    data = read_data('train_data_2016.txt')
+#     import sys
+#     data = read_data('train_data_2016.txt')
 
     N = [100, 200]
     p = [10, 20, 30, 40, 50, 75, 100, 150, 200]
 
-    patterns = random_patterns(data, N[0], p[8])
-    hebbs_rule(patterns, N[0], p[8])
+#     patterns = random_patterns(data, N[0], p[8])
+#     hebbs_rule(patterns, N[0], p[8])
