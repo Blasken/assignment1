@@ -40,10 +40,9 @@ def hebbs_rule(patterns, N, p):
     for i in range(N):
         for j in range(N):
             if i != j:
-                prodsum = 0
                 for p_i in range(p):
-                    prodsum +=patterns[p_i][i] *patterns[p_i][j]
-                W[i, j] = wij * prodsum
+                    W[i, j] +=patterns[p_i][i] *patterns[p_i][j]
+    W[i, j] = wij * W[j, j]
     print(W[0:3])
 #     print(np.vdot(signs[0],signs[1]))
 #     for pi in range(p):
