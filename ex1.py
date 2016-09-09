@@ -1,6 +1,6 @@
 import os
 import sys
-import math
+import common
 import numpy as np
 
 """
@@ -34,6 +34,8 @@ def read_data(path):
     return npdata
 
 def hebbs_rule(patterns, N, p):
+    p = len(patterns)
+    N = len(patterns[0])
     wij = 1/N
     W = np.zeros((N,N))
 #     signs = [data['sign'] for data in patterns]
