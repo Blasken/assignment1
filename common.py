@@ -39,7 +39,7 @@ def hebbs_rule(patterns):
 #                for p_i in range(p):
 #                    W[i, j] += patterns[p_i][i] *patterns[p_i][j]
 #   return wij * W
-    W = patterns.dot(patterns.T)/len(patterns[0])
+    W = patterns.T.dot(patterns)/len(patterns[0])
     return W - np.diag(np.diag(W)) # Removing diagonal
 
 def random_patterns(N, p, q=0.5):
