@@ -2,6 +2,7 @@ import os
 import sys
 import common
 import numpy as np
+import matplotlib.pyplot as plt
 
 """
 Stochastic Hopfield model. Write a computer program implementing the Hopfield
@@ -17,3 +18,24 @@ Refer to the phase diagram (LN p. 60).( 1p ).
 b) Repeat the above for N = 50 , 100 , and 250 choosing p so that α is in the
 same range as above. Discuss how the value of N influences the order parameter m1 .
 """
+
+
+def run():
+    N = 500
+    alphas = [0.1, 0.2, 0.3, 0.4, 0.5, 0.8, 1]
+    iters = 100
+    for a in alphas:
+        patterns = common.random_patterns(N,a*N)
+        W = common.hebbs_rule(patterns)
+        ms = np.zeros(iters)
+        S = patterns[0,:]
+        print(S.shape)
+        for m in ms:
+            m = S.dot(patterns[0,:])
+            S = nextState(S,W,2)
+        plt.plot(ms)
+        plt.show()
+
+
+def nextState(S,W,beta=2):
+    return np.random.rand(S.size) < 1/(1+np.exp(-2*beta*W.dot(S)))
