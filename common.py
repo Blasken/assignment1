@@ -35,13 +35,17 @@ def hebbs_rule(patterns):
     return wij * W
 
 def random_patterns(N, p):
-    patterns = []
-    for i in range(p):
+    """
+    Takes N = pattern length, p = |patterns|
+    Returns numpy array of shape (p,N) with values [-1,1]
+    """
+#     patterns = []
+#     for i in range(p):
         #patterns.append(np.random.permutation(data)[:N])
-        patterns.append(np.random.choice([-1,1],N))
-    [np.random.choice([-1,1],N) for _ in range(p)]
-    np.random.choice([-1,1],N*p).reshape(p,N)
-    return patterns
+#         patterns.append(np.random.choice([-1,1],N))
+#     [np.random.choice([-1,1],N) for _ in range(p)]
+    return np.random.choice([-1,1],N*p).reshape(p,N)
+#     return patterns
 
 def digits():
     p0 = [-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,
