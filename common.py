@@ -29,16 +29,18 @@ def hebbs_rule(patterns):
     Takes patterns
     Returns Wij
     """
-    p = len(patterns)
-    N = len(patterns[0])
-    wij = 1/N
-    W = np.zeros((N,N))
-    for i in range(N):
-        for j in range(N):
-            if i != j:
-                for p_i in range(p):
-                    W[i, j] += patterns[p_i][i] *patterns[p_i][j]
-    return wij * W
+#    p = len(patterns)
+#    N = len(patterns[0])
+#    wij = 1/N
+#    W = np.zeros((N,N))
+#    for i in range(N):
+#        for j in range(N):
+#            if i != j:
+#                for p_i in range(p):
+#                    W[i, j] += patterns[p_i][i] *patterns[p_i][j]
+#   return wij * W
+    W = patterns.dot(patterns.T)/len(patterns[0])
+    return W - np.diag(np.diag(W)) # Removing diagonal
 
 def random_patterns(N, p):
     """
