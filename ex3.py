@@ -22,20 +22,26 @@ same range as above. Discuss how the value of N influences the order parameter m
 
 def run():
     N = 500
-    alphas = [0.1, 0.2, 0.3, 0.4, 0.5, 0.8, 1]
-    iters = 100
-    for a in alphas:
-        patterns = common.random_patterns(N,a*N)
-        W = common.hebbs_rule(patterns)
-        ms = np.zeros(iters)
-        S = patterns[0,:]
-        print(S.shape)
-        for m in ms:
-            m = S.dot(patterns[0,:])
-            S = nextState(S,W,2)
-        plt.plot(ms)
-        plt.show()
-
+    alphas = np.linspace(0.01,0.2,20)
+    mValues = np.zeros(alphas.size)
+    iters = 1000
+    nRealisations = 10
+    for k in range(alphas.size):
+        a = alphas[k]
+        mSum = 0
+        for _ in range(nRealisations):
+            patterns = common.random_patterns(N,int(a*N))
+            W = common.hebbs_rule(patterns)
+            ms = np.zeros(iters)
+            S = patterns[0]
+            for i in range(iters):
+                ms[i] = S.dot(patterns[0])/N
+                S = nextState(S,W,2)
+            mSum += np.average(ms[100:])
+        mValues[k] = mSum/nRealisations
+    plt.plot(alphas,mValues)
+    plt.show()
+    #plt.close()
 
 def nextState(S,W,beta=2):
-    return np.random.rand(S.size) < 1/(1+np.exp(-2*beta*W.dot(S)))
+    return np.sign((np.random.rand(S.size) < 1/(1 + np.exp(-2*beta*W.dot(S))))-0.5)
