@@ -11,4 +11,9 @@ Feed these patterns to the network and use asynchronous updating. For each
 digit, repeat many times. Determine and plot the probability that the
 network retrieves the correct pattern as a function of q. Discuss.
 """
+def run():
+    digits = common.digits()
+    W = common.hebbs_rule(digits)
 
+    for q in range(0.1, 0.9, 0.001):
+        random_patterns(len(digits[0]), len(digits), q)
