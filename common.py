@@ -2,6 +2,14 @@ import numpy as np
 import sys
 
 def read_data(path):
+    """
+    Read in a file from path
+    Takes: path
+    Returns a numpy array indexed as array[point[x,y],sign]
+        example:
+        point = array[point] gives [x,y]
+        sign = array[sign] gives [+-1]
+    """
     f = open(path)
     data = []
 
