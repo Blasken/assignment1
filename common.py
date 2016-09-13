@@ -23,6 +23,12 @@ def read_data(path):
 
 
 def hebbs_rule(patterns):
+    """
+    Calculates Wij using Hebb's rule
+
+    Takes patterns
+    Returns Wij
+    """
     p = len(patterns)
     N = len(patterns[0])
     wij = 1/N
