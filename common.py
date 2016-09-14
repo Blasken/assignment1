@@ -42,7 +42,7 @@ def hebbs_rule(patterns):
     W = patterns.T.dot(patterns)/len(patterns[0])
     return W - np.diag(np.diag(W)) # Removing diagonal
 
-def random_patterns(N, p, q=0.5):
+def random_patterns(N, P, q=0.5):
     """
     Takes N = pattern length, p = |patterns|
     Returns numpy array of shape (p,N) with values [-1,1]
@@ -52,7 +52,7 @@ def random_patterns(N, p, q=0.5):
         #patterns.append(np.random.permutation(data)[:N])
 #         patterns.append(np.random.choice([-1,1],N))
 #     [np.random.choice([-1,1],N) for _ in range(p)]
-    return np.random.choice([-1,1],N*p, p=[q, 1-q]).reshape(p,N)
+    return np.random.choice([-1,1],N*P, p=[q, 1-q]).reshape(P,N)
 #     return patterns
 
 def digits():
