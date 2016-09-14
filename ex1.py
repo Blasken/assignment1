@@ -3,6 +3,9 @@ import sys
 import common
 import numpy as np
 import scipy as sp
+from scipy.special import erf, erfc
+import matplotlib.pyplot as plt
+
 """
 Write a computer program imple-menting the Hopfield model with synchronous
 updating (LN1pp. 10 and 14)according to the McCulloch-Pitts rule
@@ -21,33 +24,47 @@ a precise estimate of PError. Plot your simulation results together with the
 correspondingtheoretical curve as a function of p/N. Discuss
 """
 
-def run(steps=100):
+def run(steps=10):
     Ns = [100, 200]
     P = [10, 20, 30, 40, 50, 75, 100, 150, 200]
     errors = []
 
-    Ns = [200]
-    P = [10]
-    for (i,N) in enumerate(Ns):
+#     Ns = [200]
+#     P = [10]
+    for N in Ns:
         sub_errors = []
-        for (j,p) in enumerate(P):
-            subsum = np.zeros([p])
+        for p in P:
+            subsum = 0 #np.zeros([p])
             for _ in range(steps):
                 patterns = common.random_patterns(N, p)
                 W = common.hebbs_rule(patterns)
-# fix algebra....
-#                 print(np.not_equal(patterns, step(W,patterns)))
-                subsum += np.any(np.not_equal(patterns, step(W,patterns)),0)
+                subsum += np.sum(np.not_equal(patterns, step(W,patterns))) / (p*N)
             sub_errors.append(subsum / steps)
+#             print(erfc(np.sqrt(N/(2*p)))/2)
         errors.append(sub_errors)
-        print(errors[i][j])
+    print(errors)
+    _plot(errors,P)
 
 def step(W, S):
-# fix algebra....
-    return np.sign(np.dot(W,S))
+    return np.sign(W.dot(S.T)).T
 
 def p_error(S, S_next):
     pass
+
+def _plot(errors,P):
+    X = np.linspace(0,1)
+    y = np.sqrt(X)
+    Y = erfc(y)/2
+#     print(erfc(np.sqrt(N/(2*p)))/2)
+    plt.plot(X,Y)
+    x1 = [p / 100 for p in P]
+    x2 = [p / 200 for p in P]
+#     plt.scatter(x1,errors[0])
+#     plt.scatter(x2,errors[1])
+    plt.scatter(x2,errors[0])
+#     plt.scatter(x2,errors[1])
+
+    plt.show()
 
 def crosstalk_term(patterns):
     dsum = patterns.dot(patterns.T)
