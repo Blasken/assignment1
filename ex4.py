@@ -20,14 +20,14 @@ the training set is defined analogously.
 
 a) Normalise the input data to zero mean and unit variance (together for both
 the validation and the training set). Train the network without hidden layers.
-Use asynchronous updating with learning rate η = 0 . 01, activation function
-g(b) = tanh( βb ) with β = 1 / 2.  Initialise the weights randomly with uniform
-distribution in [ − 0 . 2 , 0 . 2]. Initialise the biases randomly with uniform
-distribution in [ − 1 , 1]. Make 100 independent training experiments, each with
+Use asynchronous updating with learning rate η = 0.01, activation function
+g(b)=tanh(βb) with β=1/2.  Initialise the weights randomly with uniform
+distribution in [−0.2, 0.2]. Initialise the biases randomly with uniform
+distribution in [−1, 1]. Make 100 independent training experiments, each with
 2 · 10^5 iterations (one iteration corresponds to feeding a randomly chosen
 pattern and updating weights and thresholds). For each t raining ex- periment
 determine the minimum classification error for the training a nd the
-classification sets. Average these errors over the independent t raining
+classification sets. Average these errors over the independent training
 experiments. Discuss your results. ( 1p ).
 
 b) Now use back propagation to train a network with one hidden layer th at has
@@ -41,6 +41,15 @@ to the results obtained in a . Discuss. Does the hidden layer improve the
 performance? What is the effect of increasing the number of hidden neurons?
 Do you observe overfitting?
 """
+
+def trainNetwork(error, neurons, weights, biases, actFunc, actFuncPrim, learningRate = 0.01):
+    deltas = list(range(len(weights)))
+    deltas[-1] = actFuncPrim(neurons[-1])*error
+    for l in range(len(neurons) - 2):
+        print("Should not be here yet")
+    for l, d in enumerate(deltas):
+        
+
 
 def run():
     train_data = common.read_data('train_data_2016.txt')
@@ -75,14 +84,12 @@ def run():
     """
     Training
     """
+    learningRate = 0.01
     iters = 2*10**5
-    def runNetwork(inValues,weights,biases,actFunction):
-        neurons = inValues
-        for w, b in weights, biases:
-            neurons = actFunction(neurons.dot(w)-b)
-        return neurons
-    print(runNetwork(np.arange(2),W,theta,actFunc))
-
+    order = np.random.randint(len(trainX),size=iters)
+    for i,n in enumerate(order):
+        output = runNetwork(np.array([trainX,trainY]).T,W,theta,actFunc)
+        W, theta = trainNetwork(output, W, theta, learningRate)
     """
     Plotting
     """
@@ -91,6 +98,22 @@ def run():
     mask = train_data['sign'] == -1
     plt.plot(trainX[mask],trainY[mask],'b.')
 
+
+def runNetwork(inValues,weights,biases,actFunction):
+    """
+    Run a general feed forward fully connected neural network.
+        inValues is the value for the input neurons
+        weights and biases are lists of matrices and vectors
+        actFuntion is the choosen activation function.
+
+        returns the value of the output neuron
+    """
+    neurons = []
+    currNeurons = inValues
+    for i in range(len(weights)):
+        w, b = weights[i], biases[i]
+        currNeurons = actFunction(currNeurons.dot(w)-b)
+    return currNeurons
 def initialiseWeights(layers):
     """
     Creates randomly initialised weight matrices and bias vectors for a
