@@ -48,8 +48,8 @@ def trainNetwork(error, neurons, weights, biases, actFunc, actFuncPrim, learning
     for l in range(len(neurons) - 2):
         print("Should not be here yet")
     for l, d in enumerate(deltas):
-        
-
+        weights[l] += learningRate*np.outer(d,neurons[l])
+        biases[l] +=
 
 def run():
     train_data = common.read_data('train_data_2016.txt')
