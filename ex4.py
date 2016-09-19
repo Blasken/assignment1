@@ -43,13 +43,14 @@ Do you observe overfitting?
 """
 
 def trainNetwork(error, neurons, weights, biases, actFunc, actFuncPrim, learningRate = 0.01):
+
     deltas = list(range(len(weights)))
     deltas[-1] = actFuncPrim(neurons[-1])*error
     for l in range(len(neurons) - 2):
         print("Should not be here yet, for deeper networks")
     for l, d in enumerate(deltas):
         weights[l] += learningRate*np.outer(d,actFunc(neurons[l]))
-        biases[l] -= learningRate*dcp-dockancp-dockan
+        biases[l] -= learningRate*d
         #FIXME: Probabily using wrong neurons in weight updating
 
 def run():
@@ -97,7 +98,7 @@ def run():
     for i,p in enumerate(order):
         output, neurons = runNetwork(trainInput[p],W,theta,actFunc)
         error = trainL[p] - output
-        #newW, newTheta = trainNetwork(error, neurons, W, theta, actFunc, actFuncPrim, learningRate)
+        newW, newTheta = trainNetwork(error, neurons, W, theta, actFunc, actFuncPrim, learningRate)
         #FIXME: Getting NoneType object is not iterable for some reason.
         print('after')
         outputT, _ = runNetwork(trainInput,W,theta,actFunc)
