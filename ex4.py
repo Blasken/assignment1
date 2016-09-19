@@ -43,15 +43,15 @@ Do you observe overfitting?
 """
 
 def trainNetwork(error, neurons, weights, biases, actFunc, actFuncPrim, learningRate = 0.01):
-
-    deltas = list(range(len(weights)))
+    nL = len(weights)
+    deltas = list(range(nL))
     deltas[-1] = actFuncPrim(neurons[-1])*error
-    for l in range(len(neurons) - 2):
-        print("Should not be here yet, for deeper networks")
+    for l in range(nL-1):
+        currL = l - nL
+        deltas[currL] = actFuncPrim(neurons[currL]) * weights[currL+1].dot(deltas[currL+1])
     for l, d in enumerate(deltas):
-        weights[l] += learningRate*np.outer(d,actFunc(neurons[l]))
+        weights[l] += learningRate*np.outer(actFunc(neurons[l]),d)
         biases[l] -= learningRate*d
-        #FIXME: Probabily using wrong neurons in weight updating
 
 def run():
     train_data = common.read_data('train_data_2016.txt')
@@ -75,13 +75,21 @@ def run():
     trainX /= np.sqrt(varX)
     validX /= np.sqrt(varX)
 
+    meanY = np.mean(np.append(trainY,validY))
+    trainY -= meanY
+    validY -= meanY
+
+    varY = np.var(np.append(trainY,validY))
+    trainY /= np.sqrt(varY)
+    validY /= np.sqrt(varY)
+
     trainInput = np.array([trainX,trainY]).T
     validInput = np.array([validX,validY]).T
 
     """
     Network
     """
-    layers = [2,1]
+    layers = [2,2,1]
     W, theta = initialiseWeights(layers)
     def actFunc(x):
         return np.tanh(x/2)
@@ -91,27 +99,44 @@ def run():
     Training
     """
     learningRate = 0.01
-    iters = 2*10**1
+    iters = 2*10**5
     order = np.random.randint(len(trainX),size=iters)
     CTerror = np.zeros(iters)
     CVerror = np.zeros(iters)
+    print(W)
     for i,p in enumerate(order):
         output, neurons = runNetwork(trainInput[p],W,theta,actFunc)
         error = trainL[p] - output
-        newW, newTheta = trainNetwork(error, neurons, W, theta, actFunc, actFuncPrim, learningRate)
-        #FIXME: Getting NoneType object is not iterable for some reason.
-        print('after')
+        trainNetwork(error, neurons, W, theta, actFunc, actFuncPrim, learningRate)
         outputT, _ = runNetwork(trainInput,W,theta,actFunc)
         outputV, _ = runNetwork(validInput,W,theta,actFunc)
-        CTerror[i] = np.not_equal(np.sign(outputT),trainL).sum()/len(trainX)
-        CVerror[i] = np.not_equal(np.sign(outputV),validL).sum()/len(validX)
+
+        CTerror[i] = np.not_equal(np.sign(outputT).T,trainL).sum()/len(trainL)
+        CVerror[i] = np.not_equal(np.sign(outputV).T,validL).sum()/len(validL)
     """
     Plotting
     """
+    print(W)
+    print(CTerror[-1])
+    print(CVerror[-1])
+    """
+    plt.clf()
+    plt.plot(CVerror,'r-',label='Validation error')
+    plt.plot(CTerror,'b-',label='Training error')
+    plt.legend()
+    """
+    plt.clf()
     mask = train_data['sign'] == 1
     plt.plot(trainX[mask],trainY[mask],'r.')
     mask = train_data['sign'] == -1
     plt.plot(trainX[mask],trainY[mask],'b.')
+    x = np.linspace(-2,2,4)
+    print(W[0])
+    y = x*W[0][0][1]/W[0][1][1]+ theta[0]
+    plt.plot(x,y)
+    plt.xlim(-2,2)
+    plt.ylim(-2,2)
+    #"""
 
 
 def runNetwork(inValues,weights,biases,actFunction):
@@ -124,13 +149,14 @@ def runNetwork(inValues,weights,biases,actFunction):
         returns the value of the output neuron, and the preactivated values
                 for all neurons.
     """
-    neurons = list(range(len(weights)))
+    neurons = list(range(len(weights)+1))
     currNeurons = inValues
     for i in range(len(weights)):
+        neurons[i] = currNeurons
         w, b = weights[i], biases[i]
         currNeurons = currNeurons.dot(w)-b
-        neurons[i] = currNeurons
         actNeuron = actFunction(currNeurons)
+    neurons[-1] = currNeurons
     return actNeuron, neurons
 
 def initialiseWeights(layers):
