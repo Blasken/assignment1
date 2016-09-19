@@ -147,4 +147,4 @@ def digits():
     npp3 = np.array(p3, dtype=np.int)
     npp4 = np.array(p4, dtype=np.int)
 
-    return [npp0, npp1, npp2, npp3, npp4]
+    return np.array([npp0, npp1, npp2, npp3, npp4])
