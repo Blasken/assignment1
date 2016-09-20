@@ -44,9 +44,6 @@ def run(steps=10):
 def step(W, S):
     return np.sign(W.dot(S.T)).T
 
-def p_error(S, S_next):
-    pass
-
 def _plot(errors, N, P):
     x1 = [p / 100 for p in P]
     x2 = [p / 200 for p in P]
@@ -68,16 +65,3 @@ def crosstalk_term(patterns):
     dsum = patterns.dot(dsum)
     dsum = dsum / len(patterns[0])
     return dsum
-
-#     return np.fill_diagonal(dsum / len(patterns[0]), 0)
-
-
-if __name__ == '__main__':
-#     import sys
-#     data = read_data('train_data_2016.txt')
-
-    N = [100, 200]
-    p = [10, 20, 30, 40, 50, 75, 100, 150, 200]
-
-#     patterns = random_patterns(data, N[0], p[8])
-#     hebbs_rule(patterns, N[0], p[8])
