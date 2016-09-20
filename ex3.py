@@ -23,7 +23,7 @@ same range as above. Discuss how the value of N influences the order parameter m
 def run():
     Ns = [50, 100, 250, 500]
     iters = 300
-    nRealisations = 1
+    nRealisations = 100
     plt.clf()
     for N in Ns:
         print(N)
