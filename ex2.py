@@ -1,4 +1,5 @@
 import numpy as np
+from scipy.special import expit
 import common
 import matplotlib.pyplot as plt
 from common import random_patterns as rp
@@ -27,10 +28,11 @@ def run(steps=100):
 
     ilist = [i for i in range(len(W[0]))]
 
-    for q in np.linspace(0.1, 0.5, 10):
-        errors = []
+    x_axis = [q/100 for q in range(100)]
+    errors = []
+    for q in x_axis:
         error = 0
-        print("q =", q)
+#         print("q =", q)
         for n in range(steps):
             distorted = digits * rp(len(digits[0]), len(digits), q)
 #             print(np.sum(np.not_equal(distorted, digits)))
@@ -45,11 +47,15 @@ def run(steps=100):
 #             plt.imshow(digit.reshape((16,10)))
 #             plt.show()
 #             print(np.sum(np.not_equal(digits, distorted)))
-            error += (np.sum(np.not_equal(digits, distorted))) / steps
-        errors.append(error / digits.size)
-        print(error / digits.size)
-    print(errors)
-    print()
+            error += np.sum(np.not_equal(digits, distorted)) / (steps * digits.size)
+        errors.append(error)
+#         print(error)
+#     print(errors)
+    plt.plot(x_axis,errors)
+    y = expit(np.linspace(-6,6,100))
+    plt.plot(x_axis, y)
+    plt.show()
+#     print()
 
 def astep(W, digits):
     ilist = [i for i in range(len(W[0]))]
