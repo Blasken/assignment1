@@ -42,16 +42,18 @@ performance? What is the effect of increasing the number of hidden neurons?
 Do you observe overfitting?
 """
 
-def trainNetwork(error, neurons, weights, biases, actFunc, actFuncPrim, learningRate = 0.01):
+def trainNetwork(error, neurons, weights, biases, actFuncPrim, learningRate = 0.01):
+    """
+    Function for updating weights and biases with backpropagation.
+    """
     nL = len(weights)
     deltas = list(range(nL))
     deltas[-1] = actFuncPrim(neurons[-1])*error
-    for l in range(nL-1):
-        currL = l - nL
-        deltas[currL] = actFuncPrim(neurons[currL]) * weights[currL+1].dot(deltas[currL+1])
+    for l in -np.arange(nL-1)-2:
+        deltas[l] = actFuncPrim(neurons[l]) * weights[l+1].dot(deltas[l+1])
     for l, d in enumerate(deltas):
-        weights[l] += learningRate*np.outer(actFunc(neurons[l]),d)
-        biases[l] -= learningRate*d
+        weights[l] = weights[l] + learningRate*np.outer(neurons[l],d)
+        biases[l] = biases[l] - learningRate*d
 
 def run():
     train_data = common.read_data('train_data_2016.txt')
@@ -89,34 +91,40 @@ def run():
     """
     Network
     """
-    layers = [2,2,1]
-    W, theta = initialiseWeights(layers)
+    learningRate = 0.01
+    iters = 10**5
+    nRealisations = 2
     def actFunc(x):
         return np.tanh(x/2)
     def actFuncPrim(x):
-        return (1-actFunc(x)**2)/2
-    """
-    Training
-    """
-    learningRate = 0.01
-    iters = 2*10**5
-    order = np.random.randint(len(trainX),size=iters)
-    CTerror = np.zeros(iters)
-    CVerror = np.zeros(iters)
-    print(W)
-    for i,p in enumerate(order):
-        output, neurons = runNetwork(trainInput[p],W,theta,actFunc)
-        error = trainL[p] - output
-        trainNetwork(error, neurons, W, theta, actFunc, actFuncPrim, learningRate)
-        outputT, _ = runNetwork(trainInput,W,theta,actFunc)
-        outputV, _ = runNetwork(validInput,W,theta,actFunc)
+        return (1-x**2)/2
+    for n in [2,4,8,16,32]:
+        layers = [2,n,1]
+        for k in range(nRealisations):
+            W, theta = initialiseWeights(layers)
+            """
+            Training
+            """
 
-        CTerror[i] = np.not_equal(np.sign(outputT).T,trainL).sum()/len(trainL)
-        CVerror[i] = np.not_equal(np.sign(outputV).T,validL).sum()/len(validL)
-    """
-    Plotting
-    """
-    print(W)
+            order = np.random.randint(len(trainX),size=iters)
+            CTerror = np.zeros(iters//100)
+            CVerror = np.zeros(iters//100)
+            for i,p in enumerate(order):
+                neurons = runNetwork(trainInput[p],W,theta,actFunc)
+                error = trainL[p] - neurons[-1]
+                trainNetwork(error,neurons, W, theta, actFuncPrim, learningRate)
+                if not i%100:
+                    outputT = runNetwork(trainInput,W,theta,actFunc)[-1]
+                    outputV = runNetwork(validInput,W,theta,actFunc)[-1]
+
+                    CTerror[i//100] = np.not_equal(np.sign(outputT).T,trainL).sum()/len(trainL)
+                    CVerror[i//100] = np.not_equal(np.sign(outputV).T,validL).sum()/len(validL)
+            print("Minimal training error for {} hidden neurons: {}".format(n,np.min(CTerror)))
+            print("Minimal validation error for {} hidden neurons: {}".format(n,np.min(CVerror)))
+        """
+        Plotting
+        """
+
     print(CTerror[-1])
     print(CVerror[-1])
     """
@@ -131,8 +139,9 @@ def run():
     mask = train_data['sign'] == -1
     plt.plot(trainX[mask],trainY[mask],'b.')
     x = np.linspace(-2,2,4)
-    print(W[0])
-    y = x*W[0][0][1]/W[0][1][1]+ theta[0]
+    y = x*-W[0][0][0]/W[0][0][1] + theta[0][0]
+    plt.plot(x,y)
+    y = x*W[0][1][0]/W[0][1][1] + theta[0][1]
     plt.plot(x,y)
     plt.xlim(-2,2)
     plt.ylim(-2,2)
@@ -150,14 +159,10 @@ def runNetwork(inValues,weights,biases,actFunction):
                 for all neurons.
     """
     neurons = list(range(len(weights)+1))
-    currNeurons = inValues
+    neurons[0] = inValues
     for i in range(len(weights)):
-        neurons[i] = currNeurons
-        w, b = weights[i], biases[i]
-        currNeurons = currNeurons.dot(w)-b
-        actNeuron = actFunction(currNeurons)
-    neurons[-1] = currNeurons
-    return actNeuron, neurons
+        neurons[i+1] = actFunction(neurons[i].dot(weights[i])-biases[i])
+    return neurons
 
 def initialiseWeights(layers):
     """
