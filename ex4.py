@@ -93,13 +93,17 @@ def run():
     """
     learningRate = 0.01
     iters = 10**5
-    nRealisations = 2
+    nRealisations = 100
+    nHiddenLayers = [2,4,8,16,32]
+    averageCT = np.zeros(len(nHiddenLayers))
+    averageCV = np.zeros(len(nHiddenLayers))
     def actFunc(x):
         return np.tanh(x/2)
     def actFuncPrim(x):
         return (1-x**2)/2
-    for n in [2,4,8,16,32]:
+    for j,n in enumerate(nHiddenLayers):
         layers = [2,n,1]
+        print("Running {} realisations of networks with {} structure...".format(nRealisations,layers))
         for k in range(nRealisations):
             W, theta = initialiseWeights(layers)
             """
@@ -119,19 +123,23 @@ def run():
 
                     CTerror[i//100] = np.not_equal(np.sign(outputT).T,trainL).sum()/len(trainL)
                     CVerror[i//100] = np.not_equal(np.sign(outputV).T,validL).sum()/len(validL)
-            print("Minimal training error for {} hidden neurons: {}".format(n,np.min(CTerror)))
-            print("Minimal validation error for {} hidden neurons: {}".format(n,np.min(CVerror)))
-        """
-        Plotting
-        """
-
-    print(CTerror[-1])
-    print(CVerror[-1])
+            averageCT[j] += np.min(CTerror)/nRealisations
+            averageCV[j] += np.min(CVerror)/nRealisations
+        print("Average minimal training error for {} hidden neurons: {}".format(n,averageCT[j]))
+        print("Average minimal validation error for {} hidden neurons: {}".format(n,averageCV[j]))
     """
+    Plotting
+    """
+
+    #"""
     plt.clf()
-    plt.plot(CVerror,'r-',label='Validation error')
-    plt.plot(CTerror,'b-',label='Training error')
+    plt.plot(nHiddenLayers,averageCV,'r-',label='Validation error')
+    plt.plot(nHiddenLayers,averageCT,'b-',label='Training error')
+    plt.xlabel("Number of hidden units")
+    plt.ylabel("Classification error")
+    plt.xticks(nHiddenLayers)
     plt.legend()
+    plt.savefig("ex4b")
     """
     plt.clf()
     mask = train_data['sign'] == 1
@@ -145,7 +153,7 @@ def run():
     plt.plot(x,y)
     plt.xlim(-2,2)
     plt.ylim(-2,2)
-    #"""
+    """
 
 
 def runNetwork(inValues,weights,biases,actFunction):
