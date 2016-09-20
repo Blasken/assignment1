@@ -14,28 +14,17 @@ Feed these patterns to the network and use asynchronous updating. For each
 digit, repeat many times. Determine and plot the probability that the
 network retrieves the correct pattern as a function of q. Discuss.
 """
-def run(steps=100):
+def run(iters=100):
     digits = common.digits()
     W = common.hebbs_rule(digits)
-
-#     for q in range(0.1, 0.9, 0.001):
-#         p = random_patterns(len(digits[0]), len(digits), q)
-
-#     distorted = digits * rp(len(digits[0]), len(digits), 0.3)
-
-    distorted_list = [digits * rp(len(digits[0]), len(digits), q)
-                                 for q in np.linspace(0.1,0.9,9)]
-
-    ilist = [i for i in range(len(W[0]))]
 
     x_axis = [q/100 for q in range(100)]
     errors = []
     for q in x_axis:
         error = 0
 #         print("q =", q)
-        for n in range(steps):
+        for n in range(iters):
             distorted = digits * rp(len(digits[0]), len(digits), q)
-#             print(np.sum(np.not_equal(distorted, digits)))
             distorted = astep(W, distorted)
 #         np.random.shuffle(ilist)
 #         for digit in distorted:
@@ -47,15 +36,12 @@ def run(steps=100):
 #             plt.imshow(digit.reshape((16,10)))
 #             plt.show()
 #             print(np.sum(np.not_equal(digits, distorted)))
-            error += np.sum(np.not_equal(digits, distorted)) / (steps * digits.size)
-        errors.append(error)
-#         print(error)
-#     print(errors)
+            error += np.sum(np.not_equal(digits, distorted))
+        errors.append(error / (iters * digits.size))
     plt.plot(x_axis,errors)
     y = expit(np.linspace(-6,6,100))
     plt.plot(x_axis, y)
     plt.show()
-#     print()
 
 def astep(W, digits):
     ilist = [i for i in range(len(W[0]))]
