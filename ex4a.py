@@ -111,17 +111,18 @@ def run():
         """
 
         order = np.random.randint(len(trainX),size=iters)
-        CTerror = np.zeros(iters)
-        CVerror = np.zeros(iters)
+        CTerror = np.zeros(iters//100)
+        CVerror = np.zeros(iters//100)
         for i,p in enumerate(order):
             neurons = runNetwork(trainInput[p],W,theta,actFunc)
             error = trainL[p] - neurons[-1]
             trainNetwork(error,neurons, W, theta, actFuncPrim, learningRate)
-            outputT = runNetwork(trainInput,W,theta,actFunc)[-1]
-            outputV = runNetwork(validInput,W,theta,actFunc)[-1]
+            if i%100:
+                outputT = runNetwork(trainInput,W,theta,actFunc)[-1]
+                outputV = runNetwork(validInput,W,theta,actFunc)[-1]
 
-            CTerror[i] = np.not_equal(np.sign(outputT).T,trainL).sum()/len(trainL)
-            CVerror[i] = np.not_equal(np.sign(outputV).T,validL).sum()/len(validL)
+                CTerror[i//100] = np.not_equal(np.sign(outputT).T,trainL).sum()/len(trainL)
+                CVerror[i//100] = np.not_equal(np.sign(outputV).T,validL).sum()/len(validL)
         averageCT += np.min(CTerror)/nRealisations
         averageCV += np.min(CVerror)/nRealisations
 
