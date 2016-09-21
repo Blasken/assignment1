@@ -92,7 +92,7 @@ def run():
     Network
     """
     learningRate = 0.01
-    iters = 10**5
+    iters = 2 * 10**5
     nRealisations = 100
     nHiddenLayers = [2,4,8,16,32]
     averageCT = np.zeros(len(nHiddenLayers))
