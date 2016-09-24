@@ -94,53 +94,54 @@ def run():
     learningRate = 0.01
     iters = 2 * 10**5
     nRealisations = 100
-    nHiddenLayers = [2,4,8,16,32]
-    averageCT = np.zeros(len(nHiddenLayers))
-    averageCV = np.zeros(len(nHiddenLayers))
+    averageCT = 0
+    averageCV = 0
     def actFunc(x):
         return np.tanh(x/2)
     def actFuncPrim(x):
         return (1-x**2)/2
-    for j,n in enumerate(nHiddenLayers):
-        layers = [2,n,1]
-        print("Running {} realisations of networks with {} structure...".format(nRealisations,layers))
-        for k in range(nRealisations):
-            W, theta = initialiseWeights(layers)
-            """
-            Training
-            """
+    layers = [2,1]
+    CTerror = np.zeros(iters//100)
+    CVerror = np.zeros(iters//100)
+    print("Running {} realisations of networks with {} structure...".format(nRealisations,layers))
+    for k in range(nRealisations):
+        W, theta = initialiseWeights(layers)
+        """
+        Training
+        """
 
-            order = np.random.randint(len(trainX),size=iters)
-            CTerror = np.zeros(iters//100)
-            CVerror = np.zeros(iters//100)
-            for i,p in enumerate(order):
-                neurons = runNetwork(trainInput[p],W,theta,actFunc)
-                error = trainL[p] - neurons[-1]
-                trainNetwork(error,neurons, W, theta, actFuncPrim, learningRate)
-                if not i%100:
-                    outputT = runNetwork(trainInput,W,theta,actFunc)[-1]
-                    outputV = runNetwork(validInput,W,theta,actFunc)[-1]
+        order = np.random.randint(len(trainX),size=iters)
+        CTerror = np.zeros(iters//100)
+        CVerror = np.zeros(iters//100)
+        for i,p in enumerate(order):
+            neurons = runNetwork(trainInput[p],W,theta,actFunc)
+            error = trainL[p] - neurons[-1]
+            trainNetwork(error,neurons, W, theta, actFuncPrim, learningRate)
+            if i%100:
+                outputT = runNetwork(trainInput,W,theta,actFunc)[-1]
+                outputV = runNetwork(validInput,W,theta,actFunc)[-1]
 
-                    CTerror[i//100] = np.not_equal(np.sign(outputT).T,trainL).sum()/len(trainL)
-                    CVerror[i//100] = np.not_equal(np.sign(outputV).T,validL).sum()/len(validL)
-            averageCT[j] += np.min(CTerror)/nRealisations
-            averageCV[j] += np.min(CVerror)/nRealisations
-        print("Average minimal training error for {} hidden neurons: {}".format(n,averageCT[j]))
-        print("Average minimal validation error for {} hidden neurons: {}".format(n,averageCV[j]))
+                CTerror[i//100] = np.not_equal(np.sign(outputT).T,trainL).sum()/len(trainL)
+                CVerror[i//100] = np.not_equal(np.sign(outputV).T,validL).sum()/len(validL)
+        averageCT += np.min(CTerror)/nRealisations
+        averageCV += np.min(CVerror)/nRealisations
+
+    print("Average minimal training error for {} ".format(averageCT))
+    print("Average minimal validation error for {} ".format(averageCV))
     """
     Plotting
-    """
 
-    #"""
+    n = 30
+    movingAverageCV = np.array([CVerror[i:i+n].sum()/n for i in range(len(CVerror)-n)])
+    movingAverageCT = np.array([CTerror[i:i+n].sum()/n for i in range(len(CTerror)-n)])
     plt.clf()
-    plt.plot(nHiddenLayers,averageCV,'r-',label='Validation error')
-    plt.plot(nHiddenLayers,averageCT,'b-',label='Training error')
-    plt.xlabel("Number of hidden units")
+    plt.plot(movingAverageCV,'r-',label='Validation error')
+    plt.plot(movingAverageCT,'b-',label='Training error')
+    plt.xlabel("Iteration")
     plt.ylabel("Classification error")
-    plt.xticks(nHiddenLayers)
     plt.legend()
-    plt.savefig("ex4b")
-    """
+    plt.savefig("ex4a")
+
     plt.clf()
     mask = train_data['sign'] == 1
     plt.plot(trainX[mask],trainY[mask],'r.')
