@@ -57,6 +57,7 @@ def _plot(errors, N, P):
 #     plt.legend((n100, n200), ("N=100", "N=200"), scatterpoints=1)
     plt.xlabel("p/N")
     plt.ylabel("P(Error)")
+    plt.savefig("ex1")
     plt.show()
 
 def crosstalk_term(patterns):
