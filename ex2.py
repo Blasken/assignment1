@@ -14,30 +14,35 @@ Feed these patterns to the network and use asynchronous updating. For each
 digit, repeat many times. Determine and plot the probability that the
 network retrieves the correct pattern as a function of q. Discuss.
 """
-def run(iters=100, debug=False):
+def run(iters=100, show_updates=False, debug=False):
     digits = common.digits()
     W = common.hebbs_rule(digits)
     P, N = digits.shape
 
-    x_axis = [q/100 for q in range(100)]
+    x_axis = [q/100 for q in range(101)]
     error_mean = []
     error_digit = []
+    updates_digit = []
     for q in x_axis:
         error_d = np.zeros(P)
+        updates_d = np.copy(error_d)
         for n in range(iters):
             distorteds = digits * rp(N, P, q)
             for i, (digit, distorted) in enumerate(zip(digits, distorteds)):
                 lucky = True
-                updates = 1
+                updates = 0
                 while lucky and not np.array_equal(digit, distorted):
                     temp_test = np.copy(distorted)
                     distorted = astep(W, distorted)
-                    lucky = updates % 5 and not np.array_equal(temp_test, distorted)
+                    updates += 1
+                    lucky = updates % 10 and not np.array_equal(temp_test, distorted)
                     if debug and lucky and not updates % 3:
                         print("Wrong updates were made, still feeling lucky for"
                                 " digit ", i, ". Try #", updates, " now...")
-                    updates += 1
+                    #updates += 1
                 error_d[i] += np.sum(np.not_equal(digit, distorted))
+                if show_updates:
+                    updates_d[i] += updates
                 if debug:
                     if not lucky and error_d[i]:
                         err = error_d[i] / ((n+1) * N)
@@ -47,15 +52,24 @@ def run(iters=100, debug=False):
                         print("perfect run! q=", q, " digit ", i, " after ", updates)
         error_digit.append(1 - error_d / (iters * N))
         error_mean.append(np.sum(error_digit[-1]) / P)
-    plt.plot(x_axis, error_digit)
-    plt.plot(x_axis, error_mean)
-    plt.legend(["0", "1", "2", "3", "4", "mean"])
-    plt.ylabel("P(pattern | q)")
-    plt.xlabel("q")
+        if show_updates:
+            updates_digit.append(updates_d / iters)
+    fig, errax = plt.subplots()
+    errax.plot(x_axis, error_digit)
+    errax.plot(x_axis, error_mean)
+    errax.legend(["0", "1", "2", "3", "4", "mean"])
+    errax.set_ylabel("P(pattern | q)")
+    errax.set_xlabel("q")
+    plt.savefig("ex2")
+    if show_updates:
+        updax = errax.twinx()
+        updax.plot(x_axis, updates_digit, ls='--')
+        updax.legend(["updates 0", "updates 1", "updates 2", "updates 3", "updates 4"], loc=4)
+        updax.set_ylabel("Updates")
 #     y = expit(np.linspace(-6,6,100))
 #     plt.plot(x_axis, y)
-    plt.savefig("ex2")
-#     plt.show()
+        plt.savefig("ex2u")
+    plt.show()
 
 def astep(W, digit):
     ilist = [i for i in range(len(W[0]))]

@@ -53,7 +53,7 @@ def _plot(errors, N, P):
     n100 = plt.plot(x1, errors[0], color='b', marker='+', linestyle='', label="N=100")
     n200 = plt.plot(x2, errors[1], color='r', marker='x', linestyle='', label="N=200")
 
-    plt.legend()
+    plt.legend(loc=4)
 #     plt.legend((n100, n200), ("N=100", "N=200"), scatterpoints=1)
     plt.xlabel("p/N")
     plt.ylabel("P(Error)")
