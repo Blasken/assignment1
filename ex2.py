@@ -14,7 +14,7 @@ Feed these patterns to the network and use asynchronous updating. For each
 digit, repeat many times. Determine and plot the probability that the
 network retrieves the correct pattern as a function of q. Discuss.
 """
-def run(iters=100, show_updates=False, debug=False):
+def run(iters=100, show_updates=False):
     digits = common.digits()
     W = common.hebbs_rule(digits)
     P, N = digits.shape
@@ -36,20 +36,9 @@ def run(iters=100, show_updates=False, debug=False):
                     distorted = astep(W, distorted)
                     updates += 1
                     lucky = updates % 10 and not np.array_equal(temp_test, distorted)
-                    if debug and lucky and not updates % 3:
-                        print("Wrong updates were made, still feeling lucky for"
-                                " digit ", i, ". Try #", updates, " now...")
-                    #updates += 1
                 error_d[i] += np.sum(np.not_equal(digit, distorted))
                 if show_updates:
                     updates_d[i] += updates
-                if debug:
-                    if not lucky and error_d[i]:
-                        err = error_d[i] / ((n+1) * N)
-                        print("Was not lucky, no progress after ", updates, " tries"
-                                ". Stuck on error ", err, " for digit ", i)
-                    if not error_d[i]:
-                        print("perfect run! q=", q, " digit ", i, " after ", updates)
         error_digit.append(1 - error_d / (iters * N))
         error_mean.append(np.sum(error_digit[-1]) / P)
         if show_updates:
@@ -66,15 +55,12 @@ def run(iters=100, show_updates=False, debug=False):
         updax.plot(x_axis, updates_digit, ls='--')
         updax.legend(["updates 0", "updates 1", "updates 2", "updates 3", "updates 4"], loc=4)
         updax.set_ylabel("Updates")
-#     y = expit(np.linspace(-6,6,100))
-#     plt.plot(x_axis, y)
         plt.savefig("ex2u")
     plt.show()
 
 def astep(W, digit):
     ilist = [i for i in range(len(W[0]))]
     np.random.shuffle(ilist)
-#     for digit in digits:
     for i in ilist:
         digit[i] = np.sign(W[i].T.dot(digit))
     return digit
