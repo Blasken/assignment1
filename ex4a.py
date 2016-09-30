@@ -1,5 +1,3 @@
-import os
-import sys
 import common
 import numpy as np
 import matplotlib.pyplot as plt
@@ -128,34 +126,6 @@ def run():
 
     print("Average minimal training error for {} ".format(averageCT))
     print("Average minimal validation error for {} ".format(averageCV))
-    """
-    Plotting
-
-    n = 30
-    movingAverageCV = np.array([CVerror[i:i+n].sum()/n for i in range(len(CVerror)-n)])
-    movingAverageCT = np.array([CTerror[i:i+n].sum()/n for i in range(len(CTerror)-n)])
-    plt.clf()
-    plt.plot(movingAverageCV,'r-',label='Validation error')
-    plt.plot(movingAverageCT,'b-',label='Training error')
-    plt.xlabel("Iteration")
-    plt.ylabel("Classification error")
-    plt.legend()
-    plt.savefig("ex4a")
-
-    plt.clf()
-    mask = train_data['sign'] == 1
-    plt.plot(trainX[mask],trainY[mask],'r.')
-    mask = train_data['sign'] == -1
-    plt.plot(trainX[mask],trainY[mask],'b.')
-    x = np.linspace(-2,2,4)
-    y = x*-W[0][0][0]/W[0][0][1] + theta[0][0]
-    plt.plot(x,y)
-    y = x*W[0][1][0]/W[0][1][1] + theta[0][1]
-    plt.plot(x,y)
-    plt.xlim(-2,2)
-    plt.ylim(-2,2)
-    """
-
 
 def runNetwork(inValues,weights,biases,actFunction):
     """
