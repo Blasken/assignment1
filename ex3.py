@@ -1,5 +1,3 @@
-import os
-import sys
 import common
 import numpy as np
 import matplotlib.pyplot as plt
@@ -26,10 +24,8 @@ def run():
     nRealisations = 100
     plt.clf()
     for N in Ns:
-        print(N)
         alphas = np.array([0.02, 0.04, 0.06, 0.08, 0.1, 0.12, 0.16, 0.2, 0.26, 0.3])
         ps = np.array([int(i) for i in alphas*N])
-        print(ps)
         alphas = ps/N
         mValues = np.zeros(alphas.size)
         for k in range(alphas.size):
