@@ -1,5 +1,3 @@
-import os
-import sys
 import common
 import numpy as np
 import scipy as sp
@@ -24,7 +22,7 @@ a precise estimate of PError. Plot your simulation results together with the
 correspondingtheoretical curve as a function of p/N. Discuss
 """
 
-def run(steps=10):
+def run(steps=1000):
     Ns = [100, 200]
     P = [10, 20, 30, 40, 50, 75, 100, 150, 200]
     errors = []
@@ -32,7 +30,7 @@ def run(steps=10):
     for N in Ns:
         sub_errors = []
         for p in P:
-            subsum = 0 #np.zeros([p])
+            subsum = 0
             for _ in range(steps):
                 patterns = common.random_patterns(N, p)
                 W = common.hebbs_rule(patterns)
@@ -54,15 +52,7 @@ def _plot(errors, N, P):
     n200 = plt.plot(x2, errors[1], color='r', marker='x', linestyle='', label="N=200")
 
     plt.legend(loc=4)
-#     plt.legend((n100, n200), ("N=100", "N=200"), scatterpoints=1)
     plt.xlabel("p/N")
     plt.ylabel("P(Error)")
     plt.savefig("ex1")
     plt.show()
-
-def crosstalk_term(patterns):
-    dsum = patterns.dot(patterns.t)
-    np.fill_diagonal(dsum, 0)
-    dsum = patterns.dot(dsum)
-    dsum = dsum / len(patterns[0])
-    return dsum
