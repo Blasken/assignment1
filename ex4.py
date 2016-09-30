@@ -1,5 +1,3 @@
-import os
-import sys
 import common
 import numpy as np
 import matplotlib.pyplot as plt
@@ -131,7 +129,6 @@ def run():
     Plotting
     """
 
-    #"""
     plt.clf()
     plt.plot(nHiddenLayers,averageCV,'r-',label='Validation error')
     plt.plot(nHiddenLayers,averageCT,'b-',label='Training error')
@@ -140,21 +137,6 @@ def run():
     plt.xticks(nHiddenLayers)
     plt.legend()
     plt.savefig("ex4b")
-    """
-    plt.clf()
-    mask = train_data['sign'] == 1
-    plt.plot(trainX[mask],trainY[mask],'r.')
-    mask = train_data['sign'] == -1
-    plt.plot(trainX[mask],trainY[mask],'b.')
-    x = np.linspace(-2,2,4)
-    y = x*-W[0][0][0]/W[0][0][1] + theta[0][0]
-    plt.plot(x,y)
-    y = x*W[0][1][0]/W[0][1][1] + theta[0][1]
-    plt.plot(x,y)
-    plt.xlim(-2,2)
-    plt.ylim(-2,2)
-    """
-
 
 def runNetwork(inValues,weights,biases,actFunction):
     """
